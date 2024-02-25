@@ -1,0 +1,257 @@
+// Include necessary libraries
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#include <TimeLib.h>
+#include <WidgetRTC.h>
+#include <Servo.h>
+
+// Blynk and WiFi configuration
+char auth[] = "tHw8H-vYyY5nYF8GR-cXN8_VqhT84jEM";
+char ssid[] = "unififibreLKH@unifi";
+char pass[] = "58828515";
+
+
+const int LDR1Pin = A0;
+const int LDR2Pin = A1;
+const int servoPin = D4; 
+Servo servo;
+WidgetRTC rtc;
+BlynkTimer timer;
+
+
+int angleFinal = 90;
+float offsetAngle = 80.90;
+unsigned long period = 60000; 
+int lockMechanism = 0; 
+
+void setup() {
+  Serial.begin(9600);
+  Blynk.begin(auth, ssid, pass);
+  while (!Blynk.connect()) {
+   
+  }
+
+  rtc.begin(); 
+  servo.attach(servoPin); 
+  servo.write(angleFinal); 
+
+  
+  timer.setInterval(period, adjustPanelPosition);
+}
+
+void adjustPanelPosition() {
+ 
+  int LDR1Reading = analogRead(LDR1Pin);
+  int LDR2Reading = analogRead(LDR2Pin);
+
+  if (!lockMechanism) {
+  
+    if (hour() >= 7 && hour() <= 17) {
+      // Adjust using LDRs or RT
+      if (abs(LDR1Reading - LDR2Reading) > 50) { 
+        adjustSolarPanelUsingLDRs(LDR1Reading, LDR2Reading);
+      } else {
+        // Fallback to RTC method here
+        // Your sun path adjustment logi
+        adjustSolarPanelUsingSunPath();
+      }
+    } else {
+      
+      servo.write(90);
+    }
+  }
+
+ 
+  Blynk.virtualWrite(V3, angleFinal);
+}
+
+void adjustSolarPanelUsingLDRs(int LDR1, int LDR2) {
+ 
+  if (LDR1 > LDR2) {
+    angleFinal--; 
+  } else {
+    angleFinal++;
+  }
+  servo.write(angleFinal);
+}
+void adjustSolarPanelUsingSunPath() {
+    if(month() == 1) { 
+        if(hour() == 7) { angle = 65.90; }
+        if(hour() == 8) { angle = 50.90; }
+        if(hour() == 9) { angle = 35.90; }
+        if(hour() == 10) { angle = 20.90; }
+        if(hour() == 11) { angle = 5.90; }
+        if(hour() == 12) { angle = -9.10; }
+        if(hour() == 13) { angle = -24.10; }  
+        if(hour() == 14) { angle = -39.10; }
+        if(hour() == 15) { angle = -54.10; }  
+        if(hour() == 16) { angle = -69.10; }
+        if(hour() == 17) { angle = -84.10; }
+    }
+    else if(month() == 2) {
+        if(hour() == 7) { angle = 68.55; }
+        if(hour() == 8) { angle = 53.55; }
+        if(hour() == 9) { angle = 38.55; }   
+        if(hour() == 10) { angle = 23.55; }
+        if(hour() == 11) { angle = 8.55; }   
+        if(hour() == 12) { angle = -6.45; }
+        if(hour() == 13) { angle = -21.45; }  
+        if(hour() == 14) { angle = -36.45; }
+        if(hour() == 15) { angle = -51.45; }  
+        if(hour() == 16) { angle = -66.45; }
+        if(hour() == 17) { angle = -81.45; }
+    }
+    else if(month() == 3) {
+        if(hour() == 7) { angle = 68.25; }
+        if(hour() == 8) { angle = 53.25; }
+        if(hour() == 9) { angle = 38.25; }   
+        if(hour() == 10) { angle = 23.25; }
+        if(hour() == 11) { angle = 8.25; }   
+        if(hour() == 12) { angle = -6.75; }
+        if(hour() == 13) { angle = -21.75; }  
+        if(hour() == 14) { angle = -36.75; }
+        if(hour() == 15) { angle = -51.75; }  
+        if(hour() == 16) { angle = -66.75; }
+        if(hour() == 17) { angle = -81.75; }
+    }
+    else if(month() == 4) {
+        if(hour() == 7) { angle = 66.03; }
+        if(hour() == 8) { angle = 51.03; }
+        if(hour() == 9) { angle = 36.03; }   
+        if(hour() == 10) { angle = 21.03; }
+        if(hour() == 11) { angle = 6.03; }   
+        if(hour() == 12) { angle = -8.97; }
+        if(hour() == 13) { angle = -23.97; }  
+        if(hour() == 14) { angle = -38.97; }
+        if(hour() == 15) { angle = -53.97; }  
+        if(hour() == 16) { angle = -68.97; }
+        if(hour() == 17) { angle = -83.97; }
+    }
+    else if(month() == 5) {
+        if(hour() == 7) { angle = 64.25; }
+        if(hour() == 8) { angle = 49.25; }
+        if(hour() == 9) { angle = 34.25; }   
+        if(hour() == 10) { angle = 19.25; }
+        if(hour() == 11) { angle = 4.25; }   
+        if(hour() == 12) { angle = -10.75; }
+        if(hour() == 13) { angle = -25.75; }  
+        if(hour() == 14) { angle = -40.75; }
+        if(hour() == 15) { angle = -55.75; }  
+        if(hour() == 16) { angle = -70.75; }
+        if(hour() == 17) { angle = -85.75; }
+    }
+    else if(month() == 6) {
+        if(hour() == 7) { angle = 64.42; }
+        if(hour() == 8) { angle = 49.25; }
+        if(hour() == 9) { angle = 34.42; }   
+        if(hour() == 10) { angle = 19.42; }
+        if(hour() == 11) { angle = 4.42; }   
+        if(hour() == 12) { angle = -10.58; }
+        if(hour() == 13) { angle = -25.58; }  
+        if(hour() == 14) { angle = -40.58; }
+        if(hour() == 15) { angle = -55.58; }  
+        if(hour() == 16) { angle = -70.58; }
+        if(hour() == 17) { angle = -85.58; }
+    }
+    else if(month() == 7) {
+        if(hour() == 7) { angle = 66.00; }
+        if(hour() == 8) { angle = 51.00; }
+        if(hour() == 9) { angle = 36.00; }   
+        if(hour() == 10) { angle = 21.00; }
+        if(hour() == 11) { angle = 6.00; }   
+        if(hour() == 12) { angle = -9.00; }
+        if(hour() == 13) { angle = -24.00; }  
+        if(hour() == 14) { angle = -39.00; }
+        if(hour() == 15) { angle = -54.00; }  
+        if(hour() == 16) { angle = -69.00; }
+        if(hour() == 17) { angle = -84.00; }
+    }
+    else if(month() == 8) {
+        if(hour() == 7) { angle = 66.66; }
+        if(hour() == 8) { angle = 51.66; }
+        if(hour() == 9) { angle = 36.66; }   
+        if(hour() == 10) { angle = 21.66; }
+        if(hour() == 11) { angle = 6.66; }   
+        if(hour() == 12) { angle = -8.34; }
+        if(hour() == 13) { angle = -23.34; }  
+        if(hour() == 14) { angle = -38.34; }
+        if(hour() == 15) { angle = -53.34; }  
+        if(hour() == 16) { angle = -68.34; }
+        if(hour() == 17) { angle = -83.34; }
+    }
+    else if(month() == 9) {
+        if(hour() == 7) { angle = 65.03; }
+        if(hour() == 8) { angle = 50.03; }
+        if(hour() == 9) { angle = 35.03; }   
+        if(hour() == 10) { angle = 20.03; }
+        if(hour() == 11) { angle = 5.03; }   
+        if(hour() == 12) { angle = -9.97; }
+        if(hour() == 13) { angle = -24.97; }  
+        if(hour() == 14) { angle = -39.97; }
+        if(hour() == 15) { angle = -54.97; }  
+        if(hour() == 16) { angle = -69.97; }
+        if(hour() == 17) { angle = -84.97; }
+    }
+    else if(month() == 10) {
+        if(hour() == 7) { angle = 62.32; }
+        if(hour() == 8) { angle = 47.32; }
+        if(hour() == 9) { angle = 32.32; }   
+        if(hour() == 10) { angle = 17.32; }
+        if(hour() == 11) { angle = 2.32; }   
+        if(hour() == 12) { angle = -12.68; }
+        if(hour() == 13) { angle = -27.68; }  
+        if(hour() == 14) { angle = -42.68; }
+        if(hour() == 15) { angle = -57.68; }  
+        if(hour() == 16) { angle = -72.68; }
+        if(hour() == 17) { angle = -87.68; }
+    }
+    else if(month() == 11) {
+        if(hour() == 7) { angle = 60.69; }
+        if(hour() == 8) { angle = 45.69; }
+        if(hour() == 9) { angle = 30.69; }   
+        if(hour() == 10) { angle = 15.69; }
+        if(hour() == 11) { angle = 0.69; }   
+        if(hour() == 12) { angle = -14.31; }
+        if(hour() == 13) { angle = -29.31; }  
+        if(hour() == 14) { angle = -44.31; }
+        if(hour() == 15) { angle = -59.31; }  
+        if(hour() == 16) { angle = -74.31; }
+        if(hour() == 17) { angle = -89.31; }
+    }
+    else if(month() == 12) {
+        if(hour() == 7) { angle = 62.10; }
+        if(hour() == 8) { angle = 47.10; }
+        if(hour() == 9) { angle = 32.10; }   
+        if(hour() == 10) { angle = 17.10; }
+        if(hour() == 11) { angle = 2.10; }   
+        if(hour() == 12) { angle = -12.90; }
+        if(hour() == 13) { angle = -27.90; }  
+        if(hour() == 14) { angle = -42.90; }
+        if(hour() == 15) { angle = -57.9; }  
+        if(hour() == 16) { angle = -72.9; }
+        if(hour() == 17) { angle = -87.9; }
+    }
+    angleFinal = 90 - (angle - (minute() / 4));
+    servo.write(constrain(angleFinal, 0, 180)); 
+}
+
+void loop() {
+  Blynk.run();
+  timer.run();
+}
+
+BLYNK_CONNECTED() {
+  rtc.begin();
+}
+
+BLYNK_WRITE(V1) {
+  int buttonState = param.asInt();
+  if (buttonState == 1) {
+    lockMechanism = !lockMechanism; // Toggle lock mechanism
+    if (lockMechanism) {
+      Serial.println("Manual mode activated");
+    } else {
+      Serial.println("Automatic mode activated");
+    }
+  }
+}
